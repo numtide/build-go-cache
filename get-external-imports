@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -eu -o pipefail
+
+if [[  $# -lt 2 ]]; then
+  echo "Usage: $0 moduledir imported-packages" >&2
+  exit 1
+fi
+moduledir="$1"
+imported_packages="$(realpath "$2")"
+
+# use a while loop
+if [ ! -f "$moduledir/go.mod" ]; then
+  echo "no go.mod in the directory: $moduledir" >&2
+  exit 1
+fi
+modname=$(awk '/^module / {print $2; exit}' "$moduledir/go.mod")
+cd "$moduledir"
+go list -f '{{ join .Imports "\n" }}' "./..." | sort -u | grep -v "$modname" > "$imported_packages"
