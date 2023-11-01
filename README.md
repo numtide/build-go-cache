@@ -58,3 +58,4 @@ buildGoModule {
 
 See [./example.nix]() for a real-world example based on telegraf
 
+Other [real-world example](https://github.com/replit/upm/pull/155)
