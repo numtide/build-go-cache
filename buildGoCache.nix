@@ -5,6 +5,7 @@
 , src
 , vendorHash
 , buildInputs ? [ ]
+, nativeBuildInputs ? [ ]
 }:
 let
   filteredSource = builtins.filterSource
@@ -20,7 +21,7 @@ in
 buildGoModule {
   name = "go-cache";
   src = filteredSource;
-  inherit buildInputs;
+  inherit buildInputs nativeBuildInputs;
   vendorHash = null;
   unpackPhase = ''
     mkdir source
