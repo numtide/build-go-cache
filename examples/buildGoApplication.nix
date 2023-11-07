@@ -15,14 +15,16 @@ let
   };
   modules = ./gomod2nix.toml;
 
+  # use gomod2nix to generate a vendor directory for our project for use in buildGoCache
+  inherit (buildGoApplication {
+    pname = "vendor-env";
+    inherit src version modules;
+    doCheck = false;
+  }) vendorEnv;
+
   goCache = buildGoCache {
     importPackagesFile = ./imported-packages-go-mod2nix;
-    vendorEnv = (buildGoApplication {
-      pname = "vendor-env";
-      inherit src version modules;
-      doCheck = false;
-    }).vendorEnv;
-    inherit src;
+    inherit src vendorEnv;
   };
 in
 buildGoApplication {
