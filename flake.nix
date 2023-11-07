@@ -1,5 +1,7 @@
 {
   description = "A very basic flake";
+  # even more performance: https://github.com/NixOS/nixpkgs/pull/266075/files (optional)
+  inputs.nixpkgs.url = "github:Mic92/nixpkgs/build-go-module";
 
   outputs = { self, nixpkgs }:
     let

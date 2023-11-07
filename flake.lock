@@ -2,16 +2,18 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1698266953,
-        "narHash": "sha256-jf72t7pC8+8h8fUslUYbWTX5rKsRwOzRMX8jJsGqDXA=",
-        "owner": "NixOS",
+        "lastModified": 1699369810,
+        "narHash": "sha256-y4rVKBIeOSParT3p6Fhtq1NEgcdpzAvmZS63jQEWNng=",
+        "owner": "Mic92",
         "repo": "nixpkgs",
-        "rev": "75a52265bda7fd25e06e3a67dee3f0354e73243c",
+        "rev": "eefb5df82c4046e9a1c89ac97e3ab48f59795fd0",
         "type": "github"
       },
       "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
+        "owner": "Mic92",
+        "ref": "build-go-module",
+        "repo": "nixpkgs",
+        "type": "github"
       }
     },
     "root": {
