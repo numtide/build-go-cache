@@ -20,18 +20,18 @@
         {
           buildGoCache = pkgs.callPackage ./buildGoCache.nix { };
           get-external-imports = pkgs.callPackage ./get-external-imports.nix { };
-          example = pkgs.callPackage ./example.nix {
+          example = pkgs.callPackage ./examples/buildGoModule.nix {
             inherit (self.legacyPackages.${system}) buildGoCache;
           };
-          example-no-cache = pkgs.callPackage ./example.nix {
+          example-no-cache = pkgs.callPackage ./examples/buildGoModule.nix {
             inherit (self.legacyPackages.${system}) buildGoCache;
             useGoCache = false;
           };
-          example-proxy-vendor = pkgs.callPackage ./example.nix {
+          example-proxy-vendor = pkgs.callPackage ./examples/buildGoModule.nix {
             inherit (self.legacyPackages.${system}) buildGoCache;
             proxyVendor = true;
           };
-          example-proxy-vendor-no-cache = pkgs.callPackage ./example.nix {
+          example-proxy-vendor-no-cache = pkgs.callPackage ./examples/buildGoModule.nix {
             inherit (self.legacyPackages.${system}) buildGoCache;
             proxyVendor = true;
             useGoCache = false;
