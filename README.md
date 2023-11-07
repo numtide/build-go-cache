@@ -37,11 +37,12 @@ Than we modify our `buildGoModule` to use your go build cache:
 ```nix
 let
   vendorHash = "sha256-aMO7nH68E1S5G1iWj29McK0VY0frfjNnJ6D6rJ29cqQ=";
+  proxyVendor = true; # must be in sync for buildGoCache and buildGoModule
   src = ./.; # replace this with the source directory
 
   goCache = buildGoCache {
     importPackagesFile = ./imported-packages;
-    inherit src vendorHash;
+    inherit src vendorHash proxyVendor;
   };
 in
 buildGoModule {
@@ -51,8 +52,7 @@ buildGoModule {
 
   inherit src;
 
-  inherit vendorHash;
-  proxyVendor = true; # we only support proxyVendor with buildGoCache just now
+  inherit vendorHash proxyVendor;
 }
 ```
 

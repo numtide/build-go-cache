@@ -1,9 +1,17 @@
 { buildGoModule
 , buildGoCache
 , fetchFromGitHub
+, proxyVendor ? false
+, useGoCache ? true
+, lib
 }:
 let
-  vendorHash = "sha256-aMO7nH68E1S5G1iWj29McK0VY0frfjNnJ6D6rJ29cqQ=";
+
+  vendorHash = if proxyVendor then
+    "sha256-aMO7nH68E1S5G1iWj29McK0VY0frfjNnJ6D6rJ29cqQ="
+  else
+    "sha256-UuFPSw4G607GhAH3pf5+vDkJGjxeyUcs7SN0GiGm/h4=";
+
   version = "1.28.3";
   src = fetchFromGitHub {
     owner = "influxdata";
@@ -16,7 +24,7 @@ let
 
   goCache = buildGoCache {
     importPackagesFile = ./imported-packages;
-    inherit src vendorHash;
+    inherit src vendorHash proxyVendor;
   };
 in
 buildGoModule {
@@ -24,14 +32,12 @@ buildGoModule {
   inherit version;
 
   subPackages = [ "cmd/telegraf" ];
-  buildInputs = [ goCache ];
+  buildInputs = lib.optional useGoCache goCache;
 
   inherit src;
   doCheck = false;
-  foo = 2;
 
-  inherit vendorHash;
-  proxyVendor = true;
+  inherit vendorHash proxyVendor;
 
   ldflags = [
     "-s"
