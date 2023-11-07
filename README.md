@@ -60,6 +60,6 @@ buildGoModule {
 }
 ```
 
-See [./example.nix]() for a real-world example based on telegraf
+See [./examples]() for real-world examples based on telegraf and gomod2nix
 
 Other [real-world example](https://github.com/replit/upm/pull/155)

@@ -4,26 +4,34 @@
 }:
 { importPackagesFile
 , src
-, vendorHash
+, vendorHash ? null
+, vendorEnv ? null
 , proxyVendor ? false
 , buildInputs ? [ ]
 , nativeBuildInputs ? [ ]
 }:
+assert (!(vendorHash != null && vendorEnv != null)); # vendorHash and vendorEnv are mutually exclusive
+assert (vendorHash != null || vendorEnv != null); # one of vendorHash or vendorEnv must be set
+assert (proxyVendor -> vendorEnv == null); # proxyVendor is not compatible with vendorEnv
 let
   filteredSource = builtins.filterSource
     (path: type: type == "regular" && (baseNameOf path == "go.sum" || baseNameOf path == "go.mod"))
 
     src;
-  goModules = (buildGoModule {
-    name = "deps";
-    src = src;
-    inherit vendorHash proxyVendor;
-  }).goModules;
+  goModules =
+    if vendorEnv == null then (buildGoModule {
+      name = "deps";
+      src = src;
+      inherit vendorHash proxyVendor;
+    }).goModules
+    else vendorEnv;
+
 in
 buildGoModule {
   name = "go-cache";
   src = filteredSource;
-  inherit buildInputs nativeBuildInputs;
+  inherit buildInputs;
+  nativeBuildInputs = [ rsync ] ++ nativeBuildInputs;
   vendorHash = null;
   unpackPhase = ''
     mkdir source
@@ -36,7 +44,6 @@ buildGoModule {
     export HOME=$TMPDIR
     mkdir -p $out/
 
-    export GOFLAGS=-trimpath
     ${if proxyVendor then ''
       export GOPROXY="file://${goModules}"
       mkdir -p $out/go-mod-cache
@@ -44,10 +51,16 @@ buildGoModule {
     '' else ''
       export GOPROXY=off
       export GOSUMDB=off
-      cp -r --reflink=auto ${goModules} vendor
+
+      cp -r --reflink=auto ${vendorEnv}/ vendor
+      export GOFLAGS="''${GOFLAGS} -mod=vendor"
     ''}
     export GOCACHE=$out/go-cache
-    xargs go install <${importPackagesFile}
+    export GO_NO_VENDOR_CHECKS="1"
+    export GOPATH=$TMPDIR/go
+    export GOBIN=$GOPATH/bin
+    mkdir -p $GOPATH/src
+    xargs go build <${importPackagesFile}
     mkdir -p $out/nix-support
     cat > $out/nix-support/setup-hook <<EOF
       cp --reflink=auto -r $out/go-cache $TMPDIR/go-cache
