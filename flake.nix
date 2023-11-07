@@ -1,5 +1,7 @@
 {
   description = "A very basic flake";
+  # even more performance: https://github.com/NixOS/nixpkgs/pull/266075/files (optional)
+  inputs.nixpkgs.url = "github:Mic92/nixpkgs/build-go-module";
 
   outputs = { self, nixpkgs }:
     let
@@ -20,6 +22,19 @@
           get-external-imports = pkgs.callPackage ./get-external-imports.nix { };
           example = pkgs.callPackage ./example.nix {
             inherit (self.legacyPackages.${system}) buildGoCache;
+          };
+          example-no-cache = pkgs.callPackage ./example.nix {
+            inherit (self.legacyPackages.${system}) buildGoCache;
+            useGoCache = false;
+          };
+          example-proxy-vendor = pkgs.callPackage ./example.nix {
+            inherit (self.legacyPackages.${system}) buildGoCache;
+            proxyVendor = true;
+          };
+          example-proxy-vendor-no-cache = pkgs.callPackage ./example.nix {
+            inherit (self.legacyPackages.${system}) buildGoCache;
+            proxyVendor = true;
+            useGoCache = false;
           };
         });
     };
