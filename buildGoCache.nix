@@ -44,6 +44,7 @@ buildGoModule {
     export HOME=$TMPDIR
     mkdir -p $out/
 
+    export GOFLAGS=-trimpath
     ${if proxyVendor then ''
       export GOPROXY="file://${goModules}"
       mkdir -p $out/go-mod-cache
