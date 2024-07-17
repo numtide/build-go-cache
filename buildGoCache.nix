@@ -14,10 +14,12 @@ assert (!(vendorHash != null && vendorEnv != null)); # vendorHash and vendorEnv 
 assert (vendorHash != null || vendorEnv != null); # one of vendorHash or vendorEnv must be set
 assert (proxyVendor -> vendorEnv == null); # proxyVendor is not compatible with vendorEnv
 let
-  filteredSource = builtins.filterSource
-    (path: type: type == "regular" && (baseNameOf path == "go.sum" || baseNameOf path == "go.mod"))
+  filteredSource = builtins.path {
+    path = src;
+    filter = path: type: type == "regular" && (baseNameOf path == "go.sum" || baseNameOf path == "go.mod" || baseNameOf path == "vendor");
+    name = "go-cache-src";
+  };
 
-    src;
   goModules =
     if vendorEnv == null then (buildGoModule {
       name = "deps";
