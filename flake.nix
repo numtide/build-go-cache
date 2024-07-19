@@ -49,5 +49,8 @@
             useGoCache = false;
           };
         });
+      checks = forAllSystems (system:
+        builtins.removeAttrs self.legacyPackages.${system} ["buildGoCache"]
+      );
     };
 }
