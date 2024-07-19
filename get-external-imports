@@ -15,4 +15,6 @@ if [ ! -f "$moduledir/go.mod" ]; then
 fi
 modname=$(awk '/^module / {print $2; exit}' "$moduledir/go.mod")
 cd "$moduledir"
-go list -f '{{ join .Imports "\n" }}' "./..." | LC_ALL=C sort -u | grep -v "$modname" | grep -Ev '^C$' > "$imported_packages"
+go list -f '{{ join .Imports "\n" }}{{ if .TestImports}}
+{{ join .TestImports "\n" }}{{ end }}{{ if .XTestImports}}
+{{ join .XTestImports "\n" }}{{ end }}' "./..." | LC_ALL=C sort -u | grep -v "$modname" | grep -Ev '^C$' > "$imported_packages"
