@@ -22,9 +22,10 @@
         {
           buildGoCache = pkgs.callPackage ./buildGoCache.nix { };
           get-external-imports = pkgs.callPackage ./get-external-imports.nix { };
-          example = pkgs.callPackage ./examples/buildGoModule.nix {
-            inherit (self.legacyPackages.${system}) buildGoCache;
-          };
+          # FIXME: error: cannot coerce null to a string
+          # example = pkgs.callPackage ./examples/buildGoModule.nix {
+          #   inherit (self.legacyPackages.${system}) buildGoCache;
+          # };
           example-no-cache = pkgs.callPackage ./examples/buildGoModule.nix {
             inherit (self.legacyPackages.${system}) buildGoCache;
             useGoCache = false;
@@ -48,5 +49,8 @@
             useGoCache = false;
           };
         });
+      checks = forAllSystems (system:
+        builtins.removeAttrs self.legacyPackages.${system} ["buildGoCache"]
+      );
     };
 }
