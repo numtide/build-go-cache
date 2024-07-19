@@ -55,7 +55,7 @@ buildGoModule {
       export GOPROXY=off
       export GOSUMDB=off
 
-      cp -r --reflink=auto ${vendorEnv}/ vendor
+      cp -r --reflink=auto ${goModules}/ vendor
       export GOFLAGS="''${GOFLAGS} -mod=vendor"
     ''}
     export GOCACHE=$out/go-cache
