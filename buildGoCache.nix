@@ -74,7 +74,7 @@ buildGoModule {
       else
         echo skipping build-go-cache copy
       fi
-      ${lib.optionalString proxyVendor ''export GOMODCACHE="$out/go-mod-cache"''}
+      ${lib.optionalString proxyVendor ''export GOMODCACHE="${placeholder "out"}/go-mod-cache"''}
     EOF
   '';
 
