@@ -63,7 +63,8 @@ buildGoModule {
     export GOPATH=$TMPDIR/go
     export GOBIN=$GOPATH/bin
     mkdir -p $GOPATH/src
-    xargs go build <${importPackagesFile}
+    # the import list is platform-independent; skip packages that build constraints exclude here.
+    xargs go list -e -f '{{if not .Error}}{{.ImportPath}}{{end}}' <${importPackagesFile} | xargs go build
     mkdir -p $out/nix-support
     cat > $out/nix-support/setup-hook <<'EOF'
       mkdir -p "$TMPDIR" || true
