@@ -1,6 +1,7 @@
 { buildGoModule
 , lib
 , rsync
+, runCommand
 }:
 { importPackagesFile
 , src
@@ -14,11 +15,19 @@ assert (!(vendorHash != null && vendorEnv != null)); # vendorHash and vendorEnv 
 assert (vendorHash != null || vendorEnv != null); # one of vendorHash or vendorEnv must be set
 assert (proxyVendor -> vendorEnv == null); # proxyVendor is not compatible with vendorEnv
 let
-  filteredSource = builtins.path {
-    path = src;
-    filter = path: type: type == "regular" && (baseNameOf path == "go.sum" || baseNameOf path == "go.mod" || baseNameOf path == "vendor");
-    name = "go-cache-src";
-  };
+  # a fetched src would need import-from-derivation in builtins.path, which pure eval forbids.
+  filteredSource =
+    if lib.isDerivation src then
+      runCommand "go-cache-src" { } ''
+        mkdir $out
+        cp ${src}/go.mod ${src}/go.sum $out/
+      ''
+    else
+      builtins.path {
+        path = src;
+        filter = path: type: type == "regular" && (baseNameOf path == "go.sum" || baseNameOf path == "go.mod" || baseNameOf path == "vendor");
+        name = "go-cache-src";
+      };
 
   goModules =
     if vendorEnv == null then (buildGoModule {
